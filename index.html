@@ -206,28 +206,29 @@
     background: rgba(17,24,39,0.95);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 64px;
+    padding: 0 16px;
+    height: 56px;
     display: flex; align-items: center; justify-content: space-between;
     position: sticky; top: 0; z-index: 50;
   }
-  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-left { display: flex; align-items: center; gap: 8px; }
   .header-icon {
-    width: 36px; height: 36px;
+    width: 30px; height: 30px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     border-radius: 8px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+    font-size: 14px;
+    flex-shrink: 0;
   }
-  .header-title { font-size: 15px; font-weight: 700; }
-  .header-sub { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+  .header-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; display: none; }
+  .header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .user-badge {
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px; font-weight: 500;
+    padding: 5px 10px;
+    font-size: 12px; font-weight: 500;
     display: flex; align-items: center; gap: 6px;
   }
   .user-dot {
@@ -1243,26 +1244,32 @@ function copyAccount() {
 
 function openHanaApp(e) {
   e.preventDefault();
-  // 하나은행 앱 딥링크 시도
-  const deepLink = 'hanabank://transfer?account=12345678901234';
-  const appStoreKorea = 'https://www.hanabank.com/cha/index.html';
-  
-  // 모바일 여부 확인
+  const accountNo = '50791071092807'; // 하이픈 제거
   const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-  
-  if (isMobile) {
-    // 딥링크 시도 후 앱스토어로 fallback
-    window.location.href = deepLink;
+  const isIOS = /iPhone|iPad/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  if (isIOS) {
+    // iOS: 하나은행 앱 Universal Link로 이동, 없으면 앱스토어
+    const appStoreUrl = 'https://apps.apple.com/kr/app/id369898555';
+    const universalLink = `https://m.hanabank.com/con/tran/TransferDepositAccountInfoView.do?acno=${accountNo}`;
+    // 먼저 유니버설 링크 시도
+    window.location.href = universalLink;
+    // 1.5초 후 앱스토어로 fallback (앱이 없을 경우)
     setTimeout(() => {
-      if (/iPhone|iPad/i.test(navigator.userAgent)) {
-        window.open('https://apps.apple.com/kr/app/하나은행/id369898555', '_blank');
-      } else {
-        window.open('https://play.google.com/store/apps/details?id=com.kebhana.hanapush', '_blank');
-      }
+      window.open(appStoreUrl, '_blank');
+    }, 1500);
+  } else if (isAndroid) {
+    // Android: intent scheme으로 하나은행 앱 실행
+    const intentUrl = `intent://transfer#Intent;scheme=hanabank;package=com.kebhana.hanapush;end`;
+    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.kebhana.hanapush';
+    window.location.href = intentUrl;
+    setTimeout(() => {
+      window.open(playStoreUrl, '_blank');
     }, 1500);
   } else {
-    // PC: 하나은행 웹사이트로 이동
-    window.open(appStoreKorea, '_blank');
+    // PC: 하나은행 모바일 웹으로 이동
+    window.open('https://m.hanabank.com', '_blank');
     showToast('📱 모바일에서 하나은행 앱으로 이체하세요');
   }
 }
