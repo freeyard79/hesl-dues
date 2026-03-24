@@ -1257,11 +1257,33 @@ function openHanaApp(e) {
   const isAndroid = /Android/i.test(navigator.userAgent);
 
   if (isIOS) {
-    // iOS: 새로워진 하나원큐 앱스토어 페이지로 이동
-    window.location.href = 'https://apps.apple.com/kr/app/id6743190232';
+    const appStoreUrl = 'https://apps.apple.com/kr/app/id6743190232';
+
+    // visibilitychange로 앱이 열렸는지 감지
+    let appOpened = false;
+    const handleVisibility = () => {
+      if (document.hidden) {
+        appOpened = true;
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // 앱 scheme 시도 (새 하나원큐)
+    window.location.href = 'hanabank1q://';
+
+    // 1.5초 후 앱이 안 열렸으면 앱스토어로
+    setTimeout(() => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (!appOpened) {
+        window.location.href = appStoreUrl;
+      }
+    }, 1500);
+
   } else if (isAndroid) {
-    // Android: 새로워진 하나원큐 플레이스토어 페이지로 이동
-    window.location.href = 'https://play.google.com/store/apps/details?id=com.hanabank.oqf';
+    // Android: intent scheme으로 앱 바로 실행 → 없으면 플레이스토어 자동 이동
+    const intentUrl = 'intent://open#Intent;scheme=hanabank1q;package=com.hanabank.oqf;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.hanabank.oqf;end';
+    window.location.href = intentUrl;
+
   } else {
     showToast('📱 모바일에서 새로운 하나원큐 앱으로 이체하세요');
   }
