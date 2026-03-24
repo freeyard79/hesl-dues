@@ -1257,13 +1257,13 @@ function openHanaApp(e) {
   const isAndroid = /Android/i.test(navigator.userAgent);
 
   if (isIOS) {
-    // iOS: 앱스토어 하나원큐 페이지로 직접 이동 (가장 안정적)
-    window.location.href = 'https://apps.apple.com/kr/app/id1362508015';
+    // iOS: 새로워진 하나원큐 앱스토어 페이지로 이동
+    window.location.href = 'https://apps.apple.com/kr/app/id6743190232';
   } else if (isAndroid) {
-    // Android: 플레이스토어 하나원큐 페이지로 직접 이동
-    window.location.href = 'https://play.google.com/store/apps/details?id=com.kebhana.hanapush';
+    // Android: 새로워진 하나원큐 플레이스토어 페이지로 이동
+    window.location.href = 'https://play.google.com/store/apps/details?id=com.hanabank.oqf';
   } else {
-    showToast('📱 모바일에서 하나원큐 앱으로 이체하세요');
+    showToast('📱 모바일에서 새로운 하나원큐 앱으로 이체하세요');
   }
 }
 
