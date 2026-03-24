@@ -682,7 +682,7 @@
         </div>
       </div>
       <a class="btn-transfer" href="hanabank://transfer?account=12345678901234" onclick="openHanaApp(event)">
-        💳 하나은행 앱으로 이체하기
+        💳 하나원큐 앱으로 이체하기
       </a>
     </div>
 
@@ -1253,33 +1253,24 @@ function copyAccount() {
 
 function openHanaApp(e) {
   e.preventDefault();
-  const accountNo = '50791071092807'; // 하이픈 제거
-  const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
   const isIOS = /iPhone|iPad/i.test(navigator.userAgent);
   const isAndroid = /Android/i.test(navigator.userAgent);
 
   if (isIOS) {
-    // iOS: 하나은행 앱 Universal Link로 이동, 없으면 앱스토어
-    const appStoreUrl = 'https://apps.apple.com/kr/app/id369898555';
-    const universalLink = `https://m.hanabank.com/con/tran/TransferDepositAccountInfoView.do?acno=${accountNo}`;
-    // 먼저 유니버설 링크 시도
-    window.location.href = universalLink;
-    // 1.5초 후 앱스토어로 fallback (앱이 없을 경우)
-    setTimeout(() => {
-      window.open(appStoreUrl, '_blank');
-    }, 1500);
+    // iOS: 하나원큐 앱 실행 → 없으면 앱스토어로
+    const appScheme = 'hanawon://';
+    const appStoreUrl = 'https://apps.apple.com/kr/app/%ED%95%98%EB%82%98%EC%9B%90%ED%81%90/id1179373727';
+    const timer = setTimeout(() => {
+      window.location.href = appStoreUrl;
+    }, 1200);
+    window.location.href = appScheme;
+    window.addEventListener('blur', () => clearTimeout(timer), { once: true });
   } else if (isAndroid) {
-    // Android: intent scheme으로 하나은행 앱 실행
-    const intentUrl = `intent://transfer#Intent;scheme=hanabank;package=com.kebhana.hanapush;end`;
-    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.kebhana.hanapush';
+    // Android: intent scheme으로 하나원큐 앱 실행 → 없으면 플레이스토어
+    const intentUrl = 'intent://#Intent;scheme=hanawon;package=com.kebhana.hanapush;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.kebhana.hanapush;end';
     window.location.href = intentUrl;
-    setTimeout(() => {
-      window.open(playStoreUrl, '_blank');
-    }, 1500);
   } else {
-    // PC: 하나은행 모바일 웹으로 이동
-    window.open('https://m.hanabank.com', '_blank');
-    showToast('📱 모바일에서 하나은행 앱으로 이체하세요');
+    showToast('📱 모바일에서 하나원큐 앱으로 이체하세요');
   }
 }
 
